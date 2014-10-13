@@ -59,9 +59,9 @@ void main (void){
 	exit(0);
 }
 void init_stack(buffer_stack *newStack, int elements){
-	newStack.ary = buffer_item;
-	newStack.count =0;
-	newStack.max = elements;
+	newStack -> ary = buffer_item;
+	newStack-> count =0;
+	newStack->max = elements;
 	sem_init(&newStack.mutex,0,1);
 	sem_init(&newStack.empty,0,N);
 	sem_init(&newStack.full,0,0);
@@ -69,17 +69,17 @@ void init_stack(buffer_stack *newStack, int elements){
 
 
 int insert_item(buffer_stack *newStack, char character){
-	if(newStack.count<newStack.max){
-		newStack.ary[newStack.count] = character;
-		newStack.count++;
+	if(newStack->count<newStack->max){
+		newStack->ary[newStack->count] = character;
+		newStack->count++;
 		return 0;
 	}else{ return -1;}
 }
 
 int remove_item(buffer_stack *newStack, char character){
-	if(newStack.count>0){
-		newStack.count--;
-		character = newStack.ary[newStack.count];
+	if(newStack->count>0){
+		newStack->count--;
+		character = newStack->ary[newStack->count];
 		return 0;
 	}else{return -1;}
 }
@@ -87,21 +87,21 @@ int remove_item(buffer_stack *newStack, char character){
 void *producer (void *p){
 	while (1) {
 		sem_wait(&newStack.empty) ;
-			sem_wait(&newStack.mutex) ;
+			sem_wait(&newStack->mutex) ;
 		// insert X to the first available slot in the buffer
 			insert_item(&newStack,'X');
-	        sem_post(&newStack.mutex); 
-		sem_post(&newStack.full);
+	        sem_post(&newStack->mutex); 
+		sem_post(&newStack->full);
 	}
 }
 
 void *consumer (void *p){
 	while (1) {
-		sem_wait(&newStack.full); 
-			sem_wait(&newStack.mutex) ;
+		sem_wait(&newStack->full); 
+			sem_wait(&newStack->mutex) ;
 		// remove X from the last used slot in the buffer
 				remove_item(&newStack, 'X');
-			sem_post(&newStack.mutex); 
-		sem_post(&newStack.empty);
+			sem_post(&newStack->mutex); 
+		sem_post(&newStack->empty);
 	}
 }
