@@ -4,9 +4,10 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include<string.h>
-
+#define N 10000000
 typedef int semaphore;
-typedef int buffer_item;
+typedef int buffer_item[N];
+
 typedef struct{
 	buffer_item *ary;
 	int count;
@@ -17,10 +18,10 @@ typedef struct{
 	sem_t full;
 } buffer_stack;
 
+
 buffer_stack newStack;
 
-//Bounded buffer
-#define N 10000000
+
 
 void *producer();
 void *consumer();
@@ -28,7 +29,7 @@ void *consumer();
 void main (void){
 // create four producer threads
 // create four consumer threads
-	make_stack(N);
+	init_stack(N);
 	pthread_t thread0;
 	pthread_t thread1;
 	pthread_t thread2;
@@ -78,7 +79,7 @@ int remove_item(buffer_stack newStack, buffer_item character){
 }
 buffer_stack init_stack(int elements){
 	//struct buffer_stack newStack;
-	newStack.ary = buffer_item[elements];
+	newStack.ary = buffer_item;
 	newStack.count =0;
 	newStack.max = elements;
 	sem_init(&newStack.mutex,0,1);
