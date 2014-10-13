@@ -27,7 +27,7 @@ void init_stack();
 void main (void){
 // create four producer threads
 // create four consumer threads
-	init_stack(newStack,N);
+	init_stack(&newStack,N);
 	pthread_t thread0;
 	pthread_t thread1;
 	pthread_t thread2;
@@ -36,6 +36,7 @@ void main (void){
 	pthread_t thread5;
 	pthread_t thread6;
 	pthread_t thread7;
+	
 
 	pthread_create(&thread0,NULL,(void*)producer,NULL);
 	pthread_create(&thread1,NULL,(void*)producer,NULL);
@@ -57,7 +58,7 @@ void main (void){
 	
 	exit(0);
 }
-void init_stack(buffer_stack &newStack, int elements){
+void init_stack(buffer_stack *newStack, int elements){
 	newStack.ary = buffer_item;
 	newStack.count =0;
 	newStack.max = elements;
@@ -67,7 +68,7 @@ void init_stack(buffer_stack &newStack, int elements){
 }
 
 
-int insert_item(buffer_stack &newStack, char character){
+int insert_item(buffer_stack *newStack, char character){
 	if(newStack.count<newStack.max){
 		newStack.ary[newStack.count] = character;
 		newStack.count++;
@@ -75,7 +76,7 @@ int insert_item(buffer_stack &newStack, char character){
 	}else{ return -1;}
 }
 
-int remove_item(buffer_stack &newStack, char character){
+int remove_item(buffer_stack *newStack, char character){
 	if(newStack.count>0){
 		newStack.count--;
 		character = newStack.ary[newStack.count];
@@ -88,7 +89,7 @@ void *producer (void *p){
 		sem_wait(&newStack.empty) ;
 			sem_wait(&newStack.mutex) ;
 		// insert X to the first available slot in the buffer
-			insert_item(newStack,'X');
+			insert_item(&newStack,'X');
 	        sem_post(&newStack.mutex); 
 		sem_post(&newStack.full);
 	}
@@ -99,7 +100,7 @@ void *consumer (void *p){
 		sem_wait(&newStack.full); 
 			sem_wait(&newStack.mutex) ;
 		// remove X from the last used slot in the buffer
-				remove_item(newStack, 'X');
+				remove_item(&newStack, 'X');
 			sem_post(&newStack.mutex); 
 		sem_post(&newStack.empty);
 	}
