@@ -7,7 +7,7 @@
 
 typedef int semaphore;
 typedef int buffer_item;
-typedef struct buffer_stack {
+typedef struct{
 	buffer_item *ary;
 	int count;
 	int max;
@@ -15,7 +15,9 @@ typedef struct buffer_stack {
 	sem_t mutex;
 	sem_t empty;
 	sem_t full;
-}
+} buffer_stack;
+
+buffer_stack newStack;
 
 //Bounded buffer
 #define N 10000000
@@ -26,6 +28,7 @@ void *consumer();
 void main (void){
 // create four producer threads
 // create four consumer threads
+	make_stack(N);
 	pthread_t thread0;
 	pthread_t thread1;
 	pthread_t thread2;
@@ -35,9 +38,7 @@ void main (void){
 	pthread_t thread6;
 	pthread_t thread7;
 
-	sem_init(&mutex,0,1);
-	sem_init(&empty,0,N);
-	sem_init(&full,0,0);
+
 
 	pthread_create(&thread0,NULL,(void*)producer,NULL);
 	pthread_create(&thread1,NULL,(void*)producer,NULL);
@@ -63,25 +64,26 @@ void main (void){
 int insert_item(buffer_stack newStack, buffer_item character){
 	if(newStack.count<newStack.max){
 		newStack.ary[newStack.count] = character;
-		printf(buffer[count]+"\n");
 		newStack.count++;
 		return 0;
 	}else{ return -1;}
 }
 
-int remove_item(buffer_stack newStack){
+int remove_item(buffer_stack newStack, buffer_item character){
 	if(newStack.count>0){
 		newStack.count--;
 		character = newStack.ary[newStack.count];
-		printf(buffer[count]+"\n");
 		return 0;
 	}else{return -1;}
 }
-buffer_stack make_stack(int elements){
-	struct buffer_stack newStack;
+buffer_stack init_stack(int elements){
+	//struct buffer_stack newStack;
 	newStack.ary = buffer_item[elements];
 	newStack.count =0;
 	newStack.max = elements;
+	sem_init(&newStack.mutex,0,1);
+	sem_init(&newStack.empty,0,N);
+	sem_init(&newStack.full,0,0);
 	return newStack;
 }
 void *producer (void *p){
@@ -89,7 +91,7 @@ void *producer (void *p){
 		sem_wait(&newStack.empty) ;
 	      sem_wait(&newStack.mutex) ;
 		// insert X to the first available slot in the buffer
-		insert_item('X');
+		insert_item(newStack,'X');
 	        sem_post(&newStack.mutex); 
 	sem_post(&newStack.full);
 	}
@@ -100,7 +102,7 @@ void *consumer (void *p){
 		sem_wait(&newStack.full); 
 			sem_wait(&newStack.mutex) ;
 		// remove X from the last used slot in the buffer
-				remove_item();
+				remove_item(newStack, 'X');
 			sem_post(&newStack.mutex); 
 		sem_post(&newStack.empty);
 	}
