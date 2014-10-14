@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <semaphore.h>
+#include <string.h>
 #include <pthread.h>
 #include<string.h>
 #define N 10000000
 int buffer_item[N];
+int i =0;
 
 typedef struct{
 	int *ary;
@@ -39,9 +41,10 @@ void main (void){
 	
 
 	pthread_create(&thread0,NULL,(void*)producer,NULL);
+	pthread_create(&thread1,NULL,(void*)producer,NULL);
 	pthread_create(&thread4,NULL,(void*)consumer,NULL);
 	
-	pthread_create(&thread1,NULL,(void*)producer,NULL);
+	
 	pthread_create(&thread5,NULL,(void*)consumer,NULL);
 	
 	pthread_create(&thread2,NULL,(void*)producer,NULL);
@@ -66,8 +69,6 @@ void main (void){
 }
 void init_stack(buffer_stack *newStack, int elements){
 	newStack -> ary = buffer_item;
-	printf("Here is some information");
-	printf("%s", newStack -> ary);
 	newStack-> count =0;
 	newStack->max = elements;
 	sem_init(&newStack->mutex,0,1);
@@ -79,7 +80,7 @@ void init_stack(buffer_stack *newStack, int elements){
 int insert_item(buffer_stack *newStack, char character){
 	if(newStack->count<newStack->max){
 		newStack->ary[newStack->count] = character;
-		printf("removing the array %s \n", newStack->ary);
+				printf("adding the array %s \n", newStack->ary);
 		newStack->count++;
 		return 0;
 	}else{ return -1;}
@@ -89,7 +90,7 @@ int remove_item(buffer_stack *newStack, char character){
 	if(newStack->count>0){
 		newStack->count--;
 		character = newStack->ary[newStack->count];
-		printf("adding the array %d \n", newStack->ary);
+		printf("removing the array %c \n", newStack->ary);
 		return 0;
 	}else{return -1;}
 }
