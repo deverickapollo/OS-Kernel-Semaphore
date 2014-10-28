@@ -1,6 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+ // disable an interrupt
+ #define DISABLE_INTERRUPTS() {  \
+     asm("wrctl status, zero");  \
+ }
+ // enable an interrupt
+ #define ENABLE_INTERRUPTS() {   \
+   asm("movi et, 1");          \
+   asm("wrctl status, et");    \
+ }
+ 
+ 
 struct thread_control_block(){
 	int size
 	int  thread_id;
@@ -19,11 +31,14 @@ void mythread_create(int thread_id){
 }
 
 //Suspend main thread
-int mythread_join(){
-	
+int mythread_join(int thread_id){
 	
 	
 }
+
+
+
+
 
 //need to complete another test
 void prototype_os(param_list)
@@ -46,7 +61,7 @@ void prototype_os(param_list)
          alt_printf (“This is the OS prototype for my exciting CSE351 course projects!\n”);
          for (j = 0 ; j < MAX; j++);
      }
- }
+}
  
  
 
@@ -66,6 +81,10 @@ mythread_scheduler(paramm_list){
 	}
 }
 
-return 0;
+	//main calling function
+	int main(void){
+		//Calling prototype OS
+		return 0;
+	}
 
 } 
