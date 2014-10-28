@@ -25,7 +25,7 @@ int mythread_join(){
 	
 }
 
-
+//need to complete
 void prototype_os(param_list)
  {
      for (i = 0; i < num_threads; i++)
