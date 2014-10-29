@@ -8,6 +8,7 @@ struct thread_control_block(){
 	(int*) malloc(sizeof(size)) context;
 }
 
+//is this the way to create a thread, don't we need to use pthread_create function?
 //Create 8 threads 
 void mythread_create(int thread_id){
 	int i, j , n=0;
@@ -19,10 +20,21 @@ void mythread_create(int thread_id){
 }
 
 //Suspend main thread
-int mythread_join(){
+int mythread_join(Pthread thread){
+    
+    (void) pthread_join(thread,NULL);
+    return 0;
 	
-	
-	
+}
+
+void mythread(){
+    //the declaration of j as an integer was added on 10/24/2011
+    int i, j , n=0;
+    n=(thread_id % 2 ==0)? 10:15;
+    for(i=0;i<n; i++){
+        printf[1](“This is message %d of thread #%d.\n”, i, thread_id);
+        for (j = 0; j < MAX; j++);
+    }
 }
 
 //need to complete another test
