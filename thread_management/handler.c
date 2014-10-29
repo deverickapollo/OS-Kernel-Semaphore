@@ -2,10 +2,18 @@
 #include <stdlib.h>
 
 
+void destroyEntry(Entry *entry)
+{
+    free(entry);
+}
+
+
+
  // disable an interrupt
  #define DISABLE_INTERRUPTS() {  \
      asm("wrctl status, zero");  \
  }
+ 
  // enable an interrupt
  #define ENABLE_INTERRUPTS() {   \
    asm("movi et, 1");          \
