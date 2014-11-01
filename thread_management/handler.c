@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <phtread.h>
 
 
 void destroyEntry(Entry *entry)
 {
     free(entry);
 }
-
 
 
  // disable an interrupt
@@ -19,6 +19,7 @@ void destroyEntry(Entry *entry)
    asm("movi et, 1");          \
    asm("wrctl status, et");    \
  }
+ 
  
  
 struct thread_control_block(){
@@ -39,13 +40,11 @@ void mythread_create(int thread_id){
 	}
 }
 
+
 //Suspend main thread
-<<<<<<< HEAD
 int mythread_join(Pthread thread){
-    
     (void) pthread_join(thread,NULL);
     return 0;
-	
 }
 
 void mythread(){
@@ -57,16 +56,6 @@ void mythread(){
         for (j = 0; j < MAX; j++);
     }
 }
-=======
-int mythread_join(int thread_id){
-	
-	
-}
-
-
-
-
->>>>>>> FETCH_HEAD
 
 //need to complete another test
 void prototype_os(param_list)
@@ -94,20 +83,37 @@ void prototype_os(param_list)
  
 
 alt_u32 mythread_handler(void *param_list){
-		//The global flag is used to indicate a timer interrupt
-		global_flag = 1;
-		return ALARMTICKS(QUANTUM_LENGTH);
+	//The global flag is used to indicate a timer interrupt
+	global_flag = 1;
+	return ALARMTICKS(QUANTUM_LENGTH);
 }
 
-mythread_scheduler(paramm_list){
+mythread_scheduler(void *param_list){
+
 //Here do whatever you need.
 //If there are still ready threads in the run queue
-	{
+
+	if(){
 		//Perform thread scheduling
 	}else{
 		alt_printf("Interrupted by the DE2 timer!\n");
 	}
+	
+	
 }
+
+
+//After creating thread, inject assembly to
+// store address space for context while calling next thread
+//Need state to block thread in queue.
+//ea set in stack space #functionName
+//Stack space properties must be initialized..interrupt register to 1..
+//before you may run your stack it must be initialized..replication process
+//Every thread has its own stack...
+//Is there anything above the SP and FP?? probably so save it
+//Using malloc for your thread, change sp to be loading for next thread.
+//global varibale--is my button coming from timer or from interrupt handler.
+//When you come back is when you switch the stack space.
 
 	//main calling function
 	int main(void){
