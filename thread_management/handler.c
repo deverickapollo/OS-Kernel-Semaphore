@@ -42,9 +42,10 @@ void mythread_create(int thread_id){
 
 
 //Suspend main thread
-int mythread_join(pthread_t thread){
+void mythread_join(pthread_t thread){
     (void) pthread_join(thread,NULL);
     return 0;
+    
 }
 
 void mythread(){
@@ -61,7 +62,7 @@ void mythread(){
 void prototype_os(param_list)
  {
 
-int num_threads=0;
+     int num_threads=0;
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
