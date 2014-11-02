@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include<string.h>
 #include <pthread.h>
 
 
@@ -22,29 +23,24 @@ void destroyEntry(char entry)
  
  
  
-struct thread_control_block{
+typedef struct {
 	int size;
 	int  thread_id;
 	int scheduling_status;
-	(int*) malloc(sizeof(size)) context;
-}
+	(int*) malloc(size) context;
+}ThreadControlBlock
 
 //is this the way to create a thread, don't we need to use pthread_create function?
 //Create 8 threads 
-void mythread_create(int thread_id){
-	int i, j , n=0;
-	n=(thread_id % 2 ==0)? 10:15;
-	for(i=0;i<n; i++){
-         printf[1]("This is message %d of thread #%d.\n", i, thread_id);
-         for (j = 0; j < MAX; j++);
-	}
+void mythread_create(pthread_t thread){
+	pthread_create(&thread,NULL,(void*)ThreadControlBlock,NULL);
 }
 
 
 //Suspend main thread
 int mythread_join(pthread_t thread){
-    (void) pthread_join(thread,NULL);
-    return 0;
+	pthread_join(thread,NULL);
+	return 0;
 }
 
 void mythread(){
@@ -119,10 +115,11 @@ mythread_scheduler(void *param_list){
 //global varibale--is my button coming from timer or from interrupt handler.
 //When you come back is when you switch the stack space.
 
+
+
 	//main calling function
 	int main(void){
 		//Calling prototype OS
 		return 0;
 	}
-
 } 
