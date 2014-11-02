@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <phtread.h>
+#include <pthread.h>
 
 
-void destroyEntry(Entry *entry)
+void destroyEntry(char entry)
 {
     free(entry);
 }
@@ -22,10 +22,10 @@ void destroyEntry(Entry *entry)
  
  
  
-struct thread_control_block(){
-	int size
+struct thread_control_block{
+	int size;
 	int  thread_id;
-	u32_t scheduling_status;
+	int scheduling_status;
 	(int*) malloc(sizeof(size)) context;
 }
 
@@ -35,14 +35,14 @@ void mythread_create(int thread_id){
 	int i, j , n=0;
 	n=(thread_id % 2 ==0)? 10:15;
 	for(i=0;i<n; i++){
-         printf[1](“This is message %d of thread #%d.\n”, i, thread_id);
+         printf[1]("This is message %d of thread #%d.\n", i, thread_id);
          for (j = 0; j < MAX; j++);
 	}
 }
 
 
 //Suspend main thread
-int mythread_join(Pthread thread){
+int mythread_join(pthread_t thread){
     (void) pthread_join(thread,NULL);
     return 0;
 }
@@ -52,7 +52,7 @@ void mythread(){
     int i, j , n=0;
     n=(thread_id % 2 ==0)? 10:15;
     for(i=0;i<n; i++){
-        printf[1](“This is message %d of thread #%d.\n”, i, thread_id);
+        printf[1]("This is message %d of thread #%d.\n", i, thread_id);
         for (j = 0; j < MAX; j++);
     }
 }
@@ -60,6 +60,8 @@ void mythread(){
 //need to complete another test
 void prototype_os(param_list)
  {
+
+int num_threads=0;
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
@@ -75,7 +77,9 @@ void prototype_os(param_list)
      // Here: initialize the timer and its interrupt handler as is done in Project I
      while (true)
      {
-         alt_printf (ÒThis is the OS prototype for my exciting CSE351 course projects!\nÓ);
+         alt_printf ("This is the OS prototype for my exciting CSE351 course projects!\n");
+	int MAX = 5;
+
          for (j = 0 ; j < MAX; j++);
      }
 }
