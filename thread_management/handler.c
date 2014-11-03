@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include<string.h>
+#include <string.h>
 #include <pthread.h>
 
 
@@ -8,8 +8,6 @@ void destroyEntry(char entry)
 {
     free(entry);
 }
-
-
  // disable an interrupt
  #define DISABLE_INTERRUPTS() {  \
      asm("wrctl status, zero");  \
@@ -20,8 +18,6 @@ void destroyEntry(char entry)
    asm("movi et, 1");          \
    asm("wrctl status, et");    \
  }
- 
- 
  
 typedef struct {
 	int size;
@@ -38,16 +34,9 @@ void mythread_create(pthread_t thread){
 
 
 //Suspend main thread
-<<<<<<< HEAD
-int mythread_join(pthread_t thread){
-	pthread_join(thread,NULL);
-	return 0;
-=======
 void mythread_join(pthread_t thread){
     (void) pthread_join(thread,NULL);
     return 0;
-    
->>>>>>> FETCH_HEAD
 }
 
 void mythread(){
@@ -60,22 +49,26 @@ void mythread(){
     }
 }
 
+
+
 //need to complete another test
 void prototype_os(param_list)
  {
-
-     int num_threads=0;
+     int num_threads=8;
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_create so that the TCB for each thread is created
          // Here: do whatever you need
+         //assembly calls
+         mythread_create(someArryOfThreads[i]);
      }
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_join to make each thread runnable/ready
          // Here: do whatever you need
+         mythread_join(someArryOfThreads[i]);
      }
      // Here: initialize the timer and its interrupt handler as is done in Project I
      while (true)
@@ -105,8 +98,6 @@ mythread_scheduler(void *param_list){
 	}else{
 		alt_printf("Interrupted by the DE2 timer!\n");
 	}
-	
-	
 }
 
 
@@ -127,6 +118,7 @@ mythread_scheduler(void *param_list){
 	//main calling function
 	int main(void){
 		//Calling prototype OS
+		prototype_os();
 		return 0;
 	}
 } 
