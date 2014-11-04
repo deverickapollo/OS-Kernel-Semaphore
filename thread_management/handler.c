@@ -19,16 +19,46 @@ void destroyEntry(Entry entry)
    asm("movi et, 1");          \
    asm("wrctl status, et");    \
  }
+<<<<<<< HEAD
  
  
  
  
+=======
+struct TCBQueue{
+    struct int front;
+    struct int rear;
+    int count;
+    ThreadControlBlock items[max];
+};
+void initialize(struct queue q){
+    q->count=0;
+    q->front=NULL;
+    q->rear=NULL;
+}
+pthread_t dequeue(struct queue *q){
+    ThreadControlBlock x;
+    q->count=q->count-1;
+    x=q->items[front];
+    q->front=(q->front+1)%max;
+    return x;
+}
+void enqueue(struct queue *q,ThreadControlBlock x){
+    if(q->count==max){
+        printf("%d is not inserted. Queue is " "full.\n",x);
+    }else{
+        q->count = q->count+1;
+        q->rear = (q->rear+1) % max;
+        q->items[rear]=x;
+    }
+}
+>>>>>>> FETCH_HEAD
 typedef struct {
 	int  thread_id;
 	int scheduling_status;			//..Running-1, Ready-2, waiting-3, start-4, done-5
 	int size;
 	(int*) malloc(size) context;
-}ThreadControlBlock
+}ThreadControlBlock;
 
 
 
@@ -62,17 +92,29 @@ void mythread(int thread_id){
 
 
 //need to complete another test
-void prototype_os(param_list)
+// are we going to call schedule in protoType_os?
+
+void prototype_os(thread arrauy, at array, st array)
  {
+<<<<<<< HEAD
   
+=======
+     int num_threads=8;
+     
+>>>>>>> FETCH_HEAD
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_create so that the TCB for each thread is created    
          //assembly calls
+<<<<<<< HEAD
          
          mythread_create(i);
      }
+=======
+         mythread_create(someArryOfThreads[i]);
+              }
+>>>>>>> FETCH_HEAD
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
@@ -96,10 +138,16 @@ alt_u32 mythread_handler(void *param_list){
 	return ALARMTICKS(QUANTUM_LENGTH);
 }
 
+<<<<<<< HEAD
 
 
 mythread_scheduler(void *param_list){
 
+=======
+//we need to parse in a arrive time list and a sevice time list, also should we just define the time slice as 1?
+mythread_scheduler(thread array, at array, st array){
+    
+>>>>>>> FETCH_HEAD
 //Here do whatever you need.
 //If there are still ready threads in the run queue
 //conditional flag checking of interrupt is from timer or not 
@@ -127,8 +175,20 @@ mythread_scheduler(void *param_list){
 
 	//main calling function
 	int main(void){
+        pthread_t threadArray;
+        // create a queue, create 8 threads and store them into the queue
+        int at,st;;
+        at=new int[8];
+        st=new int[8];
+        for(i=0;i<n;i++)
+        {
+            printf("Enter arrival time and sevice time for Process P%d :",i+1);
+            scanf("%d",&at[i]);
+            scanf("%d",&st[i]);            
+        }
 		//Calling prototype OS
-		prototype_os();
+		prototype_os(threadArray,at,st);
+        
 		return 0;
 	}
 } 
