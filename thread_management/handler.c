@@ -18,11 +18,11 @@ void destroyEntry(char entry)
    asm("movi et, 1");          \
    asm("wrctl status, et");    \
  }
-struct threadQueue{
+struct TCBQueue{
     struct int front;
     struct int rear;
     int count;
-    pthread_t items[max];
+    ThreadControlBlock items[max];
 };
 void initialize(struct queue q){
     q->count=0;
@@ -30,13 +30,13 @@ void initialize(struct queue q){
     q->rear=NULL;
 }
 pthread_t dequeue(struct queue *q){
-    pthread_t x;
+    ThreadControlBlock x;
     q->count=q->count-1;
     x=q->items[front];
     q->front=(q->front+1)%max;
     return x;
 }
-void enqueue(struct queue *q,pthread_t x){
+void enqueue(struct queue *q,ThreadControlBlock x){
     if(q->count==max){
         printf("%d is not inserted. Queue is " "full.\n",x);
     }else{
