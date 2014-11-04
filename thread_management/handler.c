@@ -52,9 +52,12 @@ void mythread(){
 
 
 //need to complete another test
-void prototype_os(param_list)
+// are we going to call schedule in protoType_os?
+
+void prototype_os(thread arrauy, at array, st array)
  {
      int num_threads=8;
+     
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
@@ -62,7 +65,7 @@ void prototype_os(param_list)
          // Here: do whatever you need
          //assembly calls
          mythread_create(someArryOfThreads[i]);
-     }
+              }
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
@@ -88,6 +91,7 @@ alt_u32 mythread_handler(void *param_list){
 	return ALARMTICKS(QUANTUM_LENGTH);
 }
 
+//we need to parse in a arrive time list and a sevice time list, also should we just define the time slice as 1?
 mythread_scheduler(void *param_list){
 
 //Here do whatever you need.
@@ -117,8 +121,20 @@ mythread_scheduler(void *param_list){
 
 	//main calling function
 	int main(void){
+        pthread_t threadArray;
+        threadArray=new pthread_t[8];
+        int at,st;;
+        at=new int[8];
+        st=new int[8];
+        for(i=0;i<n;i++)
+        {
+            printf("Enter arrival time and sevice time for Process P%d :",i+1);
+            scanf("%d",&at[i]);
+            scanf("%d",&st[i]);            
+        }
 		//Calling prototype OS
-		prototype_os();
+		prototype_os(threadArray);
+        
 		return 0;
 	}
 } 
