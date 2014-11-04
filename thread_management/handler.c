@@ -18,13 +18,39 @@ void destroyEntry(char entry)
    asm("movi et, 1");          \
    asm("wrctl status, et");    \
  }
- 
+struct threadQueue{
+    struct int front;
+    struct int rear;
+    int count;
+    pthread_t items[max];
+};
+void initialize(struct queue q){
+    q->count=0;
+    q->front=NULL;
+    q->rear=NULL;
+}
+pthread_t dequeue(struct queue *q){
+    pthread_t x;
+    q->count=q->count-1;
+    x=q->items[front];
+    q->front=(q->front+1)%max;
+    return x;
+}
+void enqueue(struct queue *q,pthread_t x){
+    if(q->count==max){
+        printf("%d is not inserted. Queue is " "full.\n",x);
+    }else{
+        q->count = q->count+1;
+        q->rear = (q->rear+1) % max;
+        q->items[rear]=x;
+    }
+}
 typedef struct {
 	int size;
 	int  thread_id;
 	int scheduling_status;
 	(int*) malloc(size) context;
-}ThreadControlBlock
+}ThreadControlBlock;
 
 //is this the way to create a thread, don't we need to use pthread_create function?
 //Create 8 threads 
@@ -92,8 +118,8 @@ alt_u32 mythread_handler(void *param_list){
 }
 
 //we need to parse in a arrive time list and a sevice time list, also should we just define the time slice as 1?
-mythread_scheduler(void *param_list){
-
+mythread_scheduler(thread array, at array, st array){
+    
 //Here do whatever you need.
 //If there are still ready threads in the run queue
 
@@ -122,7 +148,7 @@ mythread_scheduler(void *param_list){
 	//main calling function
 	int main(void){
         pthread_t threadArray;
-        threadArray=new pthread_t[8];
+        // create a queue, create 8 threads and store them into the queue
         int at,st;;
         at=new int[8];
         st=new int[8];
@@ -133,7 +159,7 @@ mythread_scheduler(void *param_list){
             scanf("%d",&st[i]);            
         }
 		//Calling prototype OS
-		prototype_os(threadArray);
+		prototype_os(threadArray,at,st);
         
 		return 0;
 	}
