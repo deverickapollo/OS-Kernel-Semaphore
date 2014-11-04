@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 
-
-void destroyEntry(char entry)
+static int num_threads=8;
+int num_currThreads =0;
+   
+void destroyEntry(Entry entry)
 {
     free(entry);
 }
@@ -19,27 +20,36 @@ void destroyEntry(char entry)
    asm("wrctl status, et");    \
  }
  
+ 
+ 
+ 
 typedef struct {
-	int size;
 	int  thread_id;
-	int scheduling_status;
+	int scheduling_status;			//..Running-1, Ready-2, waiting-3, start-4, done-5
+	int size;
 	(int*) malloc(size) context;
 }ThreadControlBlock
 
-//is this the way to create a thread, don't we need to use pthread_create function?
+
+
 //Create 8 threads 
-void mythread_create(pthread_t thread){
-	pthread_create(&thread,NULL,(void*)ThreadControlBlock,NULL);
+void mythread_create(int thread_id){
+	ThreadControlBlock threadTest;	
+	threadTest.thread_id = thread_id;
+	threadTest.scheduling_status = 3;
+	
 }
 
 
 //Suspend main thread
-void mythread_join(pthread_t thread){
-    (void) pthread_join(thread,NULL);
-    return 0;
+void mythread_join(ThreadControlBlock thread){
+    
+  
+  
+  
 }
 
-void mythread(){
+void mythread(int thread_id){
     //the declaration of j as an integer was added on 10/24/2011
     int i, j , n=0;
     n=(thread_id % 2 ==0)? 10:15;
@@ -54,29 +64,27 @@ void mythread(){
 //need to complete another test
 void prototype_os(param_list)
  {
-     int num_threads=8;
+  
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
-         // Here: call mythread_create so that the TCB for each thread is created
-         // Here: do whatever you need
+         // Here: call mythread_create so that the TCB for each thread is created    
          //assembly calls
-         mythread_create(someArryOfThreads[i]);
+         
+         mythread_create(i);
      }
      for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_join to make each thread runnable/ready
-         // Here: do whatever you need
-         mythread_join(someArryOfThreads[i]);
+         mythread_join(thread);
      }
      // Here: initialize the timer and its interrupt handler as is done in Project I
      while (true)
      {
          alt_printf ("This is the OS prototype for my exciting CSE351 course projects!\n");
-	int MAX = 5;
-
-         for (j = 0 ; j < MAX; j++);
+		int MAX = 5;
+        for (j = 0 ; j < MAX; j++);
      }
 }
  
@@ -88,11 +96,13 @@ alt_u32 mythread_handler(void *param_list){
 	return ALARMTICKS(QUANTUM_LENGTH);
 }
 
+
+
 mythread_scheduler(void *param_list){
 
 //Here do whatever you need.
 //If there are still ready threads in the run queue
-
+//conditional flag checking of interrupt is from timer or not 
 	if(){
 		//Perform thread scheduling
 	}else{
