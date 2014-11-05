@@ -1,14 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "sys/alt_alarm.h"
+#include "alt_types.h"
+
+#define ALARMTICKS(x) ((alt_ticks_per_second()*(x))/10)
+alt_alarm alarm;
+int global_flag =0;
+
 
 static int num_threads=8;
 int num_currThreads =0;
+   
    
 void destroyEntry(Entry entry)
 {
     free(entry);
 }
+
+
+
  // disable an interrupt
  #define DISABLE_INTERRUPTS() {  \
      asm("wrctl status, zero");  \
@@ -31,18 +42,26 @@ struct TCBQueue{
     int count;
     ThreadControlBlock items[max];
 };
+
+
+
 void initialize(struct queue q){
     q->count=0;
     q->front=NULL;
     q->rear=NULL;
 }
-pthread_t dequeue(struct queue *q){
+
+
+void dequeue(struct queue *q){
     ThreadControlBlock x;
     q->count=q->count-1;
     x=q->items[front];
     q->front=(q->front+1)%max;
     return x;
 }
+
+
+
 void enqueue(struct queue *q,ThreadControlBlock x){
     if(q->count==max){
         printf("%d is not inserted. Queue is " "full.\n",x);
@@ -52,14 +71,15 @@ void enqueue(struct queue *q,ThreadControlBlock x){
         q->items[rear]=x;
     }
 }
->>>>>>> FETCH_HEAD
+
+
+
 typedef struct {
 	int  thread_id;
 	int scheduling_status;			//..Running-1, Ready-2, waiting-3, start-4, done-5
 	int size;
-	(int*) malloc(size) context;
+	(int*) malloc(size) context_pointer;
 }ThreadControlBlock;
-
 
 
 //Create 8 threads 
@@ -67,6 +87,8 @@ void mythread_create(int thread_id){
 	ThreadControlBlock threadTest;	
 	threadTest.thread_id = thread_id;
 	threadTest.scheduling_status = 3;
+	threadTest.size = ; 		//Need to determine the size of the thread..dynamic right??s
+	thread.context_pointer = ; //The address location of the context_pointer. 
 	
 }
 
@@ -74,9 +96,8 @@ void mythread_create(int thread_id){
 //Suspend main thread
 void mythread_join(ThreadControlBlock thread){
     
-  
-  
-  
+  free(thread);
+
 }
 
 void mythread(int thread_id){
@@ -84,7 +105,8 @@ void mythread(int thread_id){
     int i, j , n=0;
     n=(thread_id % 2 ==0)? 10:15;
     for(i=0;i<n; i++){
-        printf[1]("This is message %d of thread #%d.\n", i, thread_id);
+        printf[1]("This is message %d of thread #%d.\n", i, thread_id); //Whats with the printf array
+        printf("This is message %d of thread #%d.\n", i, thread_id); 
         for (j = 0; j < MAX; j++);
     }
 }
@@ -96,26 +118,19 @@ void mythread(int thread_id){
 
 void prototype_os(thread arrauy, at array, st array)
  {
-<<<<<<< HEAD
-  
-=======
-     int num_threads=8;
+
      
->>>>>>> FETCH_HEAD
-     for (i = 0; i < num_threads; i++)
+  for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_create so that the TCB for each thread is created    
          //assembly calls
-<<<<<<< HEAD
-         
+     
          mythread_create(i);
      }
-=======
-         mythread_create(someArryOfThreads[i]);
+    mythread_create(someArryOfThreads[i]);
               }
->>>>>>> FETCH_HEAD
-     for (i = 0; i < num_threads; i++)
+  for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_join to make each thread runnable/ready
@@ -132,13 +147,14 @@ void prototype_os(thread arrauy, at array, st array)
  
  
 
-alt_u32 mythread_handler(void *param_list){
+alt_u32 mythread_handler(void *context){
 	//The global flag is used to indicate a timer interrupt
+	alt_printf("Interrupted by the timer handler!\n");
 	global_flag = 1;
 	return ALARMTICKS(QUANTUM_LENGTH);
+	
 }
 
-<<<<<<< HEAD
 
 
 mythread_scheduler(void *param_list){
