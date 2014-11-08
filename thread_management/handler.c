@@ -12,8 +12,7 @@ int global_flag =0;		// 1 means timer interrupt 0 not
 static int num_threads=8;  //This defines the max number of current threads possible
 int num_currThreads =0;
 int globalFramePointer = 0;
-int eaRegister=0;
-int raRegister=0;
+
 
  // disable an interrupt
  #define DISABLE_INTERRUPTS() {  \
@@ -26,7 +25,6 @@ int raRegister=0;
    asm("wrctl status, et");    \
  }
  
-
 struct {
     struct int front;
     struct int rear;
@@ -40,42 +38,49 @@ void resetFlag(){
 }
 
 
-void checkFlag(){
-	if(global == 0){
-		//Do nothing
-	}
-	else if(global_flag==1){
-		mythread_scheduler(//Current stack pointer);
+
+void checkFlag(TCBQueue *someQueue){
+	if(global_flag==1){
+		//returning new .context_pointer...where is it going? 
+		mythread_scheduler(someQueue);
 		resetFlag();
 	} 
-	
 }
 
 
-void initialize(struct queue q){
+
+void cleanup(ThreadControlBlock *killWeirdThread){
+	free(killWeirdThread);
+}
+
+
+
+void initialize(struct queue *q){
     q->count=0;
     q->front=NULL;
     q->rear=NULL;
 }
 
 
-void dequeue(struct queue *q){
+ThreadControlBlock dequeue(struct queue *q){
     ThreadControlBlock x;
     q->count=q->count-1;
     x=q->items[front];
     q->front=(q->front+1)%num_threads;
+    --num_currThreads;
     return x;
 }
 
 
 
-void enqueue(struct queue *q,ThreadControlBlock x){
+void enqueue(struct queue *q,ThreadControlBlock *x){
     if(q->count==num_threads){
         printf("%d is not inserted. Queue is " "full.\n",x);
     }else{
         q->count = q->count+1;
         q->rear = (q->rear+1) % num_threads;
         q->items[rear]=x;
+        ++num_currThreads;
     }
 }
 
@@ -92,10 +97,9 @@ typedef struct {
 	
 
 //Create 8 threads 
-void mythread_create(int thread_id, int stackSize){
+ThreadControlBlock mythread_create(int thread_id, int stackSize){
 	//So here is where we will store the stack contents from the context_pointer
 	//typecast the context_pointer to an integer arraylist. Store the offset from..such as, context_pointer[4]
-	
 	ThreadControlBlock threadTest;	
 	threadTest.thread_id = thread_id;
 	threadTest.scheduling_status = 3;
@@ -107,17 +111,17 @@ void mythread_create(int thread_id, int stackSize){
 	threadTest.frame_pointer = 	threadTest.context_pointer -1;
 	
 	//Create Stack and save sp
-	threadTest.context_pointer + 18 = mythread(thread_id)  ;		//EA Register---mythread
+	threadTest.context_pointer + 18 = mythread(thread_id);		//EA Register---mythread
 	threadTest.context_pointer + 5 = thread_id; //R4 register for parameters		
-	threadTest.context_pointer + 18 = 1;		// eStatus sets the flag for a timer interrupt	
+	threadTest.context_pointer + 17 = 1;		// eStatus sets the flag for a timer interrupt	
+	return threadTest;
 }
 
 
 //Suspend main thread
+  //Place in queue
 void mythread_join(TCBQueue someThreadQueue, ThreadControlBlock thread){
-    //Place in queue
      enqueue(someThreadQueue, thread);	
-
 }
 
 
@@ -136,7 +140,7 @@ void mythread(int thread_id){
 
 
 void prototype_os()
- {
+{
  	TCBQueue threadQueue;
  	initialize(threadQueue);	
   for (i = 0; i < num_threads; i++)
@@ -144,7 +148,7 @@ void prototype_os()
          // Here: do whatever you need
          // Here: call mythread_create so that the TCB for each thread is created    
          //assembly calls
-         newThread = mythread_create(i, 4096);
+         newThread[i] = mythread_create(i, 4096);
      }
 
 	
@@ -152,7 +156,7 @@ void prototype_os()
      {
          // Here: do whatever you need
          // Here: call mythread_join to make each thread runnable/ready
-         mythread_join(threadQueue, newThread);
+         mythread_join(threadQueue, newThread[i]);
      }
      
      
@@ -182,18 +186,14 @@ alt_u32 mythread_handler(void *context){
 //what is going on with the stack pointer
 //called from assembly file 
 
-mythread_scheduler(TCBQueue someThreadQueue, void *context){				
-	if(threadQueue.count >0){
+ThreadControlBlock.context_pointer mythread_scheduler(TCBQueue someThreadQueue){		
+		//Preserve context and restore that of the next to be execeuted
+		//Perform thread scheduling			
+	if(someThreadQueue.count >0){
 		ThreadControlBlock temp=dequeue(sometThreadQueue);
 		enqueue(someThreadQueue,temp);
-		
-		//Preserve context and restore that of the next to be execeuted
-		//Perform thread scheduling
-		
-		
-		//Return the new thread stack pointer
-		return context;
-		
+		//Return the new thread stack pointer...when returning please access the .context_pointer property
+		return temp.context_pointer;
 	}else{
 		alt_printf("Interrupted by the DE2 timer!\n");
 	}
