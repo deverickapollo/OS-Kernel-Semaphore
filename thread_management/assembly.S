@@ -2,9 +2,6 @@
 .extern resetFlag
 .extern mythread_schedule
 
-
-
-
 .section .exceptions.exit.user, "xa"
 call checkFlag			#checkFlag calls resetFlag
 mov r4, sp				# save sp to r4 to restore after mythread

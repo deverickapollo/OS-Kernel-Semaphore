@@ -13,8 +13,8 @@ int MAX = 500000;
 int global_flag =0;		// 1 means timer interrupt 0 not
 static int num_threads=8;  //This defines the max number of current threads possible
 static int stackPointer;
-ThreadControlBlock tempThread;
-TCBQueue mainThreadQueue;
+
+
 
 
  // disable an interrupt
@@ -27,14 +27,16 @@ TCBQueue mainThreadQueue;
    asm("movi et, 1");          \
    asm("wrctl status, et");    \
  }
- 
-struct {
-    struct int front;
-    struct int rear;
+
+
+struct{
+	int front;
+    int rear;
     int count;
     ThreadControlBlock items[num_threads];
 }TCBQueue;
 
+TCBQueue mainThreadQueue = NULL;
 
 void resetFlag(){
 	global_flag = 0;
@@ -57,13 +59,22 @@ void cleanup(){
 	 ENABLE_INTERRUPTS();
 }
 
-
-
 void initialize(struct queue *q){
     q->count=0;
     q->front=NULL;
     q->rear=NULL;
 }
+
+typedef struct {
+	int  thread_id;
+	int scheduling_status;			//..Running-1, Ready-2, waiting-3, start-4, done-5
+	int stack_size;
+	(int*) malloc(stack_size) context_pointer;
+	int frame_pointer;
+	int stack;
+}ThreadControlBlock;
+
+ThreadControlBlock tempThread;
 
 
 ThreadControlBlock dequeue(){
@@ -90,36 +101,31 @@ void enqueue(ThreadControlBlock *x){
     }
 }
 
-typedef struct {
-	int  thread_id;
-	int scheduling_status;			//..Running-1, Ready-2, waiting-3, start-4, done-5
-	int stack_size;
-	(int*) malloc(stack_size) context_pointer;
-	int frame_pointer;
-}ThreadControlBlock;
 
-
-	
 	
 
 //Create 8 threads 
-ThreadControlBlock mythread_create(int thread_id, int stackSize){
+ThreadControlBlock *mythread_create(int thread_id, int stackSize){
 	//So here is where we will store the stack contents from the context_pointer
 	//typecast the context_pointer to an integer arraylist. Store the offset from..such as, context_pointer[4]
 	ThreadControlBlock *threadTest;	
-	threadTest.thread_id = thread_id;
+	threadTest = (tcb *)malloc(sizeof(tcb));
+	threadTest -> thread_id = thread_id;
 	threadTest.scheduling_status = 3;
 	threadTest.stack_size = stackSize; 		
-
-	newStack= malloc(sizeOf(int)*stackSize);
+	threadTest.stack = malloc(sizeOf(int)*stackSize);
 	
-	threadTest.context_pointer = *newStack+ stackSize - 19;	 //The address location of the context_pointer. aka stack pointer...RA
+	
+	threadTest.context_pointer =  threadTest.stack+ stackSize - 19;	 //The address location of the context_pointer. aka stack pointer...RA
 	threadTest.frame_pointer = 	threadTest.context_pointer -1;
 	
+	
+	//Is this an ok way to offsey from context_pointer
 	//Create Stack and save sp
-	threadTest.context_pointer + 18 = mythread(thread_id);		//EA Register---mythread
+	threadTest.context_pointer + 18 = mythread;		//EA Register---mythread
 	threadTest.context_pointer + 5 = thread_id; //R4 register for parameters		
 	threadTest.context_pointer + 17 = 1;		// eStatus sets the flag for a timer interrupt	
+	threadTest.context_pointer - 1 = threadTest.stack + stackSize; //current FP
 	return threadTest;
 }
 
@@ -149,6 +155,7 @@ void prototype_os()
 {
  	initialize(mainThreadQueue);
  	ThreadControlBlock *newThread;	
+ 	int i,j;
   for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
@@ -162,7 +169,7 @@ void prototype_os()
      // Here: initialize the timer and its interrupt handler as is done in Project I
 	 alt_alarm_start(&alarm,ALARMTICKS(x), mythread_handler, NULL);
 	
-     while (true)
+     while (1)
      {
          alt_printf ("This is the OS prototype for my exciting CSE351 course projects!\n");
         for (j = 0 ; j < MAX; j++);
