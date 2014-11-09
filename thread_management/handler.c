@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sys/alt_alarm.h"
+#include <sys/alt_alarm.h>
+
 #include "alt_types.h"
+
 #define ALARMTICKS(x) ((alt_ticks_per_second()*(x))/10)
 alt_alarm alarm;
 
@@ -39,18 +41,18 @@ void resetFlag(){
 
 
 
-void checkFlag(TCBQueue *someQueue){
+int checkFlag(){
 	if(global_flag==1){
 		//returning new .context_pointer...where is it going? 
-		mythread_scheduler(someQueue);
 		resetFlag();
-	} 
+		return 1;
+	} else return 0;
 }
 
 
 
 void cleanup(ThreadControlBlock *killWeirdThread){
-	free(killWeirdThread);
+	free(*killWeirdThread);
 }
 
 
@@ -100,7 +102,7 @@ typedef struct {
 ThreadControlBlock mythread_create(int thread_id, int stackSize){
 	//So here is where we will store the stack contents from the context_pointer
 	//typecast the context_pointer to an integer arraylist. Store the offset from..such as, context_pointer[4]
-	ThreadControlBlock threadTest;	
+	ThreadControlBlock *threadTest;	
 	threadTest.thread_id = thread_id;
 	threadTest.scheduling_status = 3;
 	threadTest.stack_size = stackSize; 		
@@ -142,27 +144,22 @@ void mythread(int thread_id){
 void prototype_os()
 {
  	TCBQueue threadQueue;
- 	initialize(threadQueue);	
+ 	initialize(threadQueue);
+ 	ThreadControlBlock *newThread;	
   for (i = 0; i < num_threads; i++)
      {
          // Here: do whatever you need
          // Here: call mythread_create so that the TCB for each thread is created    
          //assembly calls
-         newThread[i] = mythread_create(i, 4096);
-     }
-
-	
-  for (i = 0; i < num_threads; i++)
-     {
-         // Here: do whatever you need
+         newThread = mythread_create(i, 4096);
          // Here: call mythread_join to make each thread runnable/ready
-         mythread_join(threadQueue, newThread[i]);
+         mythread_join(threadQueue, newThread);
      }
-     
-     
+        
      // Here: initialize the timer and its interrupt handler as is done in Project I
-	 alt_alarm_start(&alarm,ALARMTICKS(x), mythread_handler(), NULL);
-	 
+	 alt_alarm_start(&alarm,ALARMTICKS(x), mythread_handler, NULL);
+	
+	
      while (true)
      {
          alt_printf ("This is the OS prototype for my exciting CSE351 course projects!\n");
@@ -172,11 +169,11 @@ void prototype_os()
  
  //R2 will hold stack pointer 
 
-alt_u32 mythread_handler(void *context){
+alt_u32 mythread_handler(void * context){
 	//The global flag is used to indicate a timer interrupt
 	alt_printf("Interrupted by the mythread handler!\n");
 	global_flag = 1;
-	return ALARMTICKS(x);
+	return ALARMTICKS(QUANTUM_LENGTH);
 }
 
 //If there are still ready threads in the run queue
