@@ -12,8 +12,9 @@ int x = 10;			//This value defines the paramater for ALARMTICKS(10)
 int MAX = 500000;
 int global_flag =0;		// 1 means timer interrupt 0 not
 static int num_threads=8;  //This defines the max number of current threads possible
-int num_currThreads =0;
-int globalFramePointer = 0;
+static int stackPointer;
+ThreadControlBlock tempThread;
+TCBQueue mainThreadQueue;
 
 
  // disable an interrupt
@@ -49,10 +50,11 @@ int checkFlag(){
 	} else return 0;
 }
 
-
-
-void cleanup(ThreadControlBlock *killWeirdThread){
-	free(*killWeirdThread);
+void cleanup(){
+	 DISABLE_INTERRUPTS();
+	 	 
+	 
+	 ENABLE_INTERRUPTS();
 }
 
 
@@ -64,25 +66,27 @@ void initialize(struct queue *q){
 }
 
 
-ThreadControlBlock dequeue(struct queue *q){
+ThreadControlBlock dequeue(){
+	struct queue *q = *mainThreadQueue;
+	--mainThreadQueue.count;
     ThreadControlBlock x;
     q->count=q->count-1;
     x=q->items[front];
     q->front=(q->front+1)%num_threads;
-    --num_currThreads;
     return x;
 }
 
 
 
-void enqueue(struct queue *q,ThreadControlBlock *x){
+void enqueue(ThreadControlBlock *x){
+	struct queue *q = *mainThreadQueue;
     if(q->count==num_threads){
         printf("%d is not inserted. Queue is " "full.\n",x);
     }else{
         q->count = q->count+1;
         q->rear = (q->rear+1) % num_threads;
         q->items[rear]=x;
-        ++num_currThreads;
+        ++mainThreadQueue.count;
     }
 }
 
@@ -122,8 +126,8 @@ ThreadControlBlock mythread_create(int thread_id, int stackSize){
 
 //Suspend main thread
   //Place in queue
-void mythread_join(TCBQueue someThreadQueue, ThreadControlBlock thread){
-     enqueue(someThreadQueue, thread);	
+void mythread_join(ThreadControlBlock thread){
+     enqueue(thread);	
 }
 
 
@@ -143,8 +147,7 @@ void mythread(int thread_id){
 
 void prototype_os()
 {
- 	TCBQueue threadQueue;
- 	initialize(threadQueue);
+ 	initialize(mainThreadQueue);
  	ThreadControlBlock *newThread;	
   for (i = 0; i < num_threads; i++)
      {
@@ -153,12 +156,11 @@ void prototype_os()
          //assembly calls
          newThread = mythread_create(i, 4096);
          // Here: call mythread_join to make each thread runnable/ready
-         mythread_join(threadQueue, newThread);
+         mythread_join(newThread);
      }
         
      // Here: initialize the timer and its interrupt handler as is done in Project I
 	 alt_alarm_start(&alarm,ALARMTICKS(x), mythread_handler, NULL);
-	
 	
      while (true)
      {
@@ -166,14 +168,13 @@ void prototype_os()
         for (j = 0 ; j < MAX; j++);
      }
 }
- 
- //R2 will hold stack pointer 
+
 
 alt_u32 mythread_handler(void * context){
 	//The global flag is used to indicate a timer interrupt
 	alt_printf("Interrupted by the mythread handler!\n");
 	global_flag = 1;
-	return ALARMTICKS(QUANTUM_LENGTH);
+	return ALARMTICKS(x);
 }
 
 //If there are still ready threads in the run queue
@@ -183,20 +184,19 @@ alt_u32 mythread_handler(void * context){
 //what is going on with the stack pointer
 //called from assembly file 
 
-ThreadControlBlock.context_pointer mythread_scheduler(TCBQueue someThreadQueue){		
+void mythread_scheduler(void *context){		
 		//Preserve context and restore that of the next to be execeuted
 		//Perform thread scheduling			
-	if(someThreadQueue.count >0){
-		ThreadControlBlock temp=dequeue(sometThreadQueue);
-		enqueue(someThreadQueue,temp);
-		//Return the new thread stack pointer...when returning please access the .context_pointer property
-		return temp.context_pointer;
+	if(mainThreadQueue.count >0){
+		tempThread.context_pointer = *context;
+		enqueue(tempThread);
+		tempThread=dequeue();
+		//Return the new thread stack pointer...when returning please access the .context_pointer property	
 	}else{
 		alt_printf("Interrupted by the DE2 timer!\n");
 	}
+	return tempThread.context_pointer;
 }
-
-
 
 //After creating thread, inject assembly to
 // store address space for context while calling next thread
