@@ -1,7 +1,6 @@
 .section .exceptions.exit.user, "xa"
 
 
-
 call checkFlag
 
 beq r2, r0, done		#if not equal continue else branch to done
@@ -13,6 +12,6 @@ beq r2, r0, done		#if not equal continue else branch to done
 	mov  sp, r2				#restore sp		
 	ldw  fp, -4(sp)			#loading new frame pointer 
 	
-	
 done:
 	
+
