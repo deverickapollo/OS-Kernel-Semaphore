@@ -25,6 +25,16 @@ static unsigned int *main_stack_pointer = NULL;
 mysem_t mutex;
 mysem_t empty;
 mysem_t full;
+const int size_of_buffe=8;
+int current_remove_pointe=0;
+int current_insert_pointer=0;
+char buffer[8];
+mutex = mysem_create(1,1);
+empty = mysem_create(8,2);
+full = mysem_create(0,3);
+
+
+
 tcb *mythread_create(unsigned int tid, unsigned int stack_size, void (*mythread)(unsigned int tid))
 {
     unsigned int *tmp_ptr;
@@ -119,10 +129,18 @@ void consumer(){
 	}
 }
 void insert_item(int i){
+	curren_remove_pointer = current_remove_pointer % size_of_buffer;
+	buffer[current_remove_pointer]='x';
+	current_remove_pointer++;
 
+	printf("thread=%d has produced %d x. the current buffer size after producing: %d\n",current_running_thread-tid,i+1,current_buffer_size);
 }
 void remove_item(int i){
-
+	curren_remove_pointer = current_remove_pointer % size_of_buffer;
+	buffer[current_remove_pointer]=' ';
+	current_remove_pointer++;
+	
+	printf("thread=%d has consumed %d x. the current buffer size after producing: %d\n",current_running_thread-tid,i+1,current_buffer_size);
 }
 
 void initialize(TCBQueue emptyQueue){
@@ -171,7 +189,6 @@ mysem_t mysem_create(int value, int num)
     new_sem->value=value;
     new_sem->num=num;
     return new_sem;
-    
 }
 
 
