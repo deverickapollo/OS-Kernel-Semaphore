@@ -1,4 +1,4 @@
-.section .exceptions.exit.user, "xa"
+	.section .exceptions.exit.user, "xa"
 
 
 call checkFlag
