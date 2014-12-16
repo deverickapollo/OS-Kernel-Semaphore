@@ -28,7 +28,12 @@ void os_primitive()
     
     for (i = 0; i < NUM_THREADS; i++)
     {
-        thread_pointer = mythread_create(i, 4096, mythread);   // 4B * 4096 entries = 16KB
+		if(i%2){
+			thread_pointer= mythread_create(i,4096,consume);
+		}
+		else{
+			thread_pointer = mythread_create(i,4096,produce);
+		} 
         mythread_start(thread_pointer);
         mythread_join(thread_pointer);
     }
