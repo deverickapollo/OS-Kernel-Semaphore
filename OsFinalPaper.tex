@@ -1,0 +1,76 @@
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{}\rfoot{}
+
+\usepackage{caption}
+
+\usepackage{tikz-qtree}
+
+% From hw-example.text by bourke
+\newcommand{\problem}[1]{\vspace{.5cm}\textbf{\Large{#1}}}
+\newcommand{\answer}{\vspace{.5cm}\emph{\large{Answer:}}}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{mathtools}
+\usepackage[plain,linesnumbered]{algorithm2e} %algo2e for compatibility
+
+\newcommand{\tab}{\hspace*{2em}}
+
+
+\author{Deverick Simpson \& Yuekun Yang \\ Computer Science Department, University Of Nebraska-Lincoln}
+\title{A Synchronization Mechanism of Prototype OS}
+\date{December 18th, 2014}
+
+
+\begin{document}
+
+\maketitle
+
+\doublespacing
+\section{Introduction}
+\tab To continue our understanding of the OS kernel, the objective of this research project was to provide race-free execution for multiple producer/consumer threads through implementation of semaphores.  Furthermore, the implementation will be embedded atop the Prototype OS that has been in development through the semester.  The instructor solution for Prototype OS will be used to integrate the semaphore type.  To avoid compatibility issues between machines, the programming environment will primarily be within the CSE server on campus.  
+\section{Project Management}
+\tab The completion of the projected consisted of the implementation of the semaphore type as well as this project report.  It was agreed that implementation of the code for the semaphore type will be headed by Yuekun while the report will be completed by Deverick.  The decision was based on previous assignments history, with Deverick completing the implementation of the program as well as the report.  Deverick made himself available to discuss the theory of the project as well as debugging.  This proved to be a risk as Yuekun was not familiar with running a program on the Nios II board.  The development of the majority of the code was initially complete in the first few weeks however no testing or attempt to run the program had been done on the program until the last week.  Fortunately, most of the errors and bugs were resolved within a day.   \\
+\tab Strategy fo'0r creating a solution included using research references such lecture powerpoint slides as well as speaking with classmates on a high-level on the difficulties and odd errors that arose during development.  After careful review of the documentation, a few tasks were deemed important for the successful implementation of the semaphore type.  Those are: 
+\begin{center}
+	\small{
+		\textbf{
+			\begin{itemize}
+				\item Create functions, mysem\textunderscore create, mysem\textunderscore up, mysem\textunderscore delete, etc., outlined in documentation
+				\item Recode previous thread initialization to create producer/consumer threads with specified criteria
+				\item Add additional queue structs to contain blocked threads 
+				\item Display detailed information concerning whether the operation on buffer is successful or blocked unblocked on a semaphore		
+			\end{itemize}
+		}
+	}
+\end{center}
+
+\section{Summary}
+
+\includegraphics[scale = .6]{../shot.png}
+\tab To accomplish this, it was important to first understand the producer/consumer problem a bit further.  After researching the problem, it was important to grasp the concept of a semaphore and its role within a multi producer/consumer thread application.  Furthermore, it was important to understand the requirement develop the blocking queue and buffer to contain the current running process.  Producer and consumer threads were created using the previously developed mythread\textunderscore create of project 2.  The mutex and semaphore locks occur within the producer/consumer thread created, allowing for complete atomicity of resources.\\
+\tab In this project, most implementation of the semaphore is complete.  There are currently a few bugs preventing the threads from executing appropiately.  At the moment, threads initialize using the  function created  and immediately become blocked.
+\tab Overall, the project is fairly clear and concise.  The documentation provides most materials useful for the project.  Outside of the given documentation , little research was required to complete the project.  For future semaphore implementation projects, a similar documentation could be provided with little hesitation.  The project provides great emphasis on the principles studied within the course by reenforcing the concepts of data race and mutual exclusion, often required in today's technologies.   Furthermore, the development of the race-free execution of producer/consumer threads is significant as it enables more efficient execution of threads than previously simulated models.  \\
+\tab The implementation itself was fairly simple as most of the code had already been previously written.  The fact that this project was a continuation of the last projects eased the development process as the material was fairly familiar.  Often during courses, the mindset must swiftly switch from one concept for development to another.  Coding practices continued on from the previous implementation by using pointers and abstracting data.  Comments were also used to highlight important and/or confusing code that required a bit more elaboration.  The overall organization of the project is far better than the previous assignment as the instructor source code was used as Prototype OS.  This source consisted of .h header files as well as the .c files.  Previously, our code was compiled into a few files.  It was a lot easier to track the flow of the program with .c struct files separate from main function .c files 
+\end{document}

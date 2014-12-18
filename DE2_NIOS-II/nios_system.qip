@@ -1,0 +1,35 @@
+# clk
+# CPU
+set_global_assignment -name SDC_FILE [file join $::quartus(qip_path) CPU.sdc]
+set_global_assignment -name SOURCE_FILE [file join $::quartus(qip_path) CPU.ocp]
+# Onchip_memory
+# JTAG_UART
+# Interval_timer
+# sysid
+# SDRAM
+# Red_LEDs
+set_global_assignment -name TCL_FILE [file join $::quartus(ip_rootpath) University_Program/Input_Output/altera_up_avalon_parallel_port/altera_up_avalon_parallel_port_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Red_LEDs.v]
+# Green_LEDs
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Green_LEDs.v]
+# HEX3_HEX0
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) HEX3_HEX0.v]
+# HEX7_HEX4
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) HEX7_HEX4.v]
+# Slider_switches
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Slider_switches.v]
+# Pushbuttons
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Pushbuttons.v]
+# Expansion_JP1
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Expansion_JP1.v]
+# Expansion_JP2
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Expansion_JP2.v]
+# Serial_port
+set_global_assignment -name TCL_FILE [file join $::quartus(ip_rootpath) University_Program/Communications/altera_up_avalon_rs232/altera_up_avalon_rs232_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) Serial_port.v]
+# SRAM
+set_global_assignment -name TCL_FILE [file join $::quartus(ip_rootpath) University_Program/Memory/altera_up_avalon_sram/altera_up_avalon_sram_hw.tcl]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) SRAM.v]
+# null
+set_global_assignment -name SOPC_BUILDER_SIGNATURE_ID 0022641ADB2B000001300A45CEDC 
+ 
